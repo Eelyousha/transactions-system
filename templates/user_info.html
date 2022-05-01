@@ -1,0 +1,45 @@
+<!--article.html-->
+
+<!--Embed the header.html template at this location-->
+{{ template "header.html" .}}
+
+<!--Display the title of the article-->
+<h1>Your balance, {{.payload.Nickname}}</h1>
+
+<p>{{.payload.Balance}}</p>
+
+<!--Display the content of the article-->
+<h2>Active transactions queries</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">From</th>
+      <th scope="col">To</th>
+      <th scope="col">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .transactions}}
+    <tr>
+      <td>{{.From_user}}</td>
+      <td>{{.To_user}}</td>
+      <td>{{.Amount}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+
+<form method="post" action="addon" name="">
+  <label>
+    Transfer to
+    <input name="to_user" type="text" />
+  </label>
+  <label>
+    Amount
+    <input name="amount" type="text" />
+  </label>
+  <button type="submit">Transfer</button>
+</form>
+
+<!--Embed the footer.html template at this location-->
+{{ template "footer.html" .}}
