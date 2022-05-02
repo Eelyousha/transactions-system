@@ -7,6 +7,7 @@ import (
 func processRequest(db *pg.DB) error {
 	request := new(transaction)
 	if err := db.Model(request).Order("created_at ASC").Limit(1).Select(); err == nil {
+		db.Model(request).Where("id = ?", request.TransactionID).Delete()
 		fromUserData := new(user)
 		if err := db.Model(fromUserData).Where("nickname = ?", request.From_user).Select(); err == nil {
 			if fromUserData.Balance >= request.Amount {
@@ -26,10 +27,9 @@ func processRequest(db *pg.DB) error {
 			return err
 		}
 	} else {
+		db.Model(request).Where("id = ?", request.TransactionID).Delete()
 		return err
 	}
-
-	db.Model(request).Where("id = ?", request.TransactionID).Delete()
 
 	return nil
 }
