@@ -13,11 +13,12 @@ func processRequest(db *pg.DB) error {
 			if fromUserData.Balance >= request.Amount {
 				toUserData := new(user)
 				if err := db.Model(toUserData).Where("nickname = ?", request.To_user).Select(); err == nil {
-
-					fromUserData.Balance -= request.Amount
-					toUserData.Balance += request.Amount
-					db.Model(fromUserData).Set("balance = ?", fromUserData.Balance).Where("nickname = ?", fromUserData.Nickname).Update()
-					db.Model(toUserData).Set("balance = ?", toUserData.Balance).Where("nickname = ?", toUserData.Nickname).Update()
+					if toUserData.Nickname != fromUserData.Nickname {
+						fromUserData.Balance -= request.Amount
+						toUserData.Balance += request.Amount
+						db.Model(toUserData).Set("balance = ?", toUserData.Balance).Where("nickname = ?", toUserData.Nickname).Update()
+						db.Model(fromUserData).Set("balance = ?", fromUserData.Balance).Where("nickname = ?", fromUserData.Nickname).Update()
+					}
 				} else {
 					return err
 				}

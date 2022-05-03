@@ -7,10 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 func getCurrentState(ctx *gin.Context) {
 	nickname := ctx.Param("nickname")
-	connectDB(":5432", "postgres", "password", "postgres")
-
 	if userQuery, err := getUserFromDB(db, nickname); err == nil {
 		ctx.HTML(
 			http.StatusOK,
@@ -23,4 +22,15 @@ func getCurrentState(ctx *gin.Context) {
 	} else {
 		ctx.AbortWithError(http.StatusNotFound, err)
 	}
+}
+
+func getUsers(ctx *gin.Context) {
+	var users []struct {
+		Nickname string
+		Balance  float64
+	}
+	db.Model((*user)(nil)).Column("nickname", "balance").Select(&users)
+	ctx.HTML(http.StatusOK,
+		"index.html",
+		gin.H{"users": users})
 }
